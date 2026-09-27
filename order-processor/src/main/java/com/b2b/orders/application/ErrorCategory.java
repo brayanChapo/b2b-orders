@@ -1,0 +1,9 @@
+package com.b2b.orders.application;
+
+public enum ErrorCategory {
+    VALIDATION_ERROR,
+    TRANSIENT_DEPENDENCY_EXHAUSTED,
+    DEFINITIVE_DEPENDENCY_ERROR,
+    PERSISTENCE_ERROR,
+    REPEATED_DELIVERY_FAILURE
+}

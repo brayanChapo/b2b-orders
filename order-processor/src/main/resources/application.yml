@@ -1,3 +1,87 @@
 spring:
   application:
     name: order-processor
+  threads:
+    virtual:
+      enabled: true
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/orders?directConnection=true}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: order-processor
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      max-poll-records: 10
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        max.poll.interval.ms: 300000
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 30000
+    listener:
+      ack-mode: record
+      concurrency: ${KAFKA_LISTENER_CONCURRENCY:3}
+
+server:
+  port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+logging:
+  pattern:
+    level: "%5p [eventId=%X{eventId:-} orderId=%X{orderId:-}]"
+
+app:
+  component: order-processor@0.1.0
+  topics:
+    input: orders.created.v1
+    output: orders.processed.v1
+    dead-letter: orders.processing.dlt
+  mongodb:
+    database: ${MONGODB_DATABASE:orders}
+  clients-api:
+    base-url: ${CLIENTS_API_URL:http://localhost:8082}
+  products-api:
+    base-url: ${PRODUCTS_API_URL:http://localhost:8081}
+  http:
+    connect-timeout: 500ms
+    read-timeout: 2s
+    max-attempts: 3
+    initial-backoff: 200ms
+    backoff-multiplier: 2.0
+    jitter: 0.2
+    max-retry-after: 2s
+    product-parallelism: 8
+  consumer:
+    max-payload-bytes: 262144
+    max-items: 200
+    max-delivery-crashes: 3
+    publish-timeout: 10s
+  outbox:
+    poll-interval-millis: 500
+    batch-size: 50
+    lease: 30s
+    initial-retry: 500ms
+    max-retry: 60s
+  persistence-retry:
+    initial-interval: 1s
+    multiplier: 2.0
+    max-interval: 60s
+    max-elapsed: 10m
