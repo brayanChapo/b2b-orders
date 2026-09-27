@@ -1,0 +1,8 @@
+# Los scripts se ejecutan dentro de contenedores Linux: siempre con fin de línea LF,
+# aunque el repositorio se clone en Windows. Con CRLF fallan con errores confusos.
+*.sh    text eol=lf
+*.js    text eol=lf
+*.mjs   text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.json  text eol=lf

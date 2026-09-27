@@ -1,0 +1,17 @@
+# Configuración local
+.env
+
+# Dependencias y artefactos de build
+node_modules/
+target/
+build/
+dist/
+bin/
+coverage/
+*.log
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+.DS_Store
