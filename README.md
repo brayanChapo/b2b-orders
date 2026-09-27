@@ -53,6 +53,18 @@ La primera vez tarda unos minutos porque compila las tres imágenes.
 
 Para apagar: `docker compose down` (con `-v` también borra los datos).
 
+### Problemas frecuentes al levantar
+
+| Síntoma | Causa | Solución |
+|---|---|---|
+| `ports are not available ... bind: Intento de acceso a un socket no permitido` (en inglés, *An attempt was made to access a socket in a way forbidden*) | En Windows, Hyper-V/WSL2 reserva rangos de puertos al arrancar; el puerto no lo usa otro programa, está reservado | Ver los rangos con `netsh interface ipv4 show excludedportrange protocol=tcp`, cambiar el puerto afectado en `.env` (p. ej. `ORDER_PROCESSOR_PORT=18083`) y ejecutar `docker compose up -d` |
+| `port is already allocated` | Otro programa usa el puerto | Cambiar el puerto en `.env` |
+| `Cannot connect to the Docker daemon` | Docker Desktop no está abierto | Abrirlo y esperar a *Engine running* |
+| `kafka-init` o `mongo-init` terminan con código distinto de 0 | Scripts con fin de línea de Windows | Clonar de nuevo: `.gitattributes` fuerza LF (se comprueba con `git ls-files --eol infra/kafka/create-topics.sh`) |
+| Resultados inesperados por pruebas anteriores | Datos viejos en MongoDB o Kafka | `docker compose down -v` y volver a levantar |
+
+Si cambias un puerto en `.env`, usa ese puerto en las URLs de esta guía.
+
 ## Pruebas
 
 ```bash
@@ -147,6 +159,8 @@ Variables de `.env` (todas opcionales):
 | `ORDER_PROCESSOR_LOG_FORMAT` | `logstash` | Logs JSON de order-processor (`logstash`, `ecs` o `gelf`) |
 
 Timeouts, reintentos y límites de cada servicio: ver su README. El repositorio no contiene secretos.
+
+En Windows, si Docker indica que un puerto "no está permitido", probablemente está reservado por Hyper-V: ver [Problemas frecuentes al levantar](#problemas-frecuentes-al-levantar).
 
 ## Documentación
 

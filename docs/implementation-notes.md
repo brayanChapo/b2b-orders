@@ -41,6 +41,9 @@ Registro de diferencias entre la propuesta inicial (`docs/architecture-proposal.
 - **Firmas verificadas contra el código fuente** de las versiones que gestiona Spring Boot 3.5.15: Spring Framework 6.2.19, Spring Kafka 3.3.16, driver de MongoDB 5.5.2, Micrometer 1.15.12, Testcontainers 1.21.4 y Kafka 3.9.2.
 - **Boot conecta solo el `DefaultErrorHandler`** a los listeners si existe como bean, y con `spring.threads.virtual.enabled` los listeners corren en virtual threads. No hizo falta definir una fábrica de contenedores propia.
 - **`assertThat(org.bson.Document)` resuelve a `MapAssert`** porque `Document` implementa `Map`: una aserción con `satisfies` sobre un documento no compila. Detectado al compilar los tests de integración.
+- **Primera ejecución completa con Docker Compose:** las tres imágenes compilaron sin errores. En order-processor, `mvn -DskipTests package` compila también el código de test, así que es la primera confirmación de que código principal y tests compilan contra las librerías reales. Kafka, MongoDB, products-api y clients-api quedaron `healthy`.
+- **Puertos reservados por Windows:** order-processor no pudo publicar el puerto 8083 (*"Intento de acceso a un socket no permitido por sus permisos de acceso"*). No lo usaba otro programa: Hyper-V/WSL2 reserva rangos de puertos al arrancar. Se resolvió cambiando `ORDER_PROCESSOR_PORT` en `.env`; se documentó en el README. El valor por defecto se mantiene en 8083 porque el rango reservado varía en cada máquina.
+- **Git Bash convierte rutas en los argumentos:** `/opt/kafka/bin/...` llegaba a Docker como una ruta de Windows. Los scripts de `infra/scripts` exportan `MSYS_NO_PATHCONV=1`.
 
 ## Estado de verificación
 
@@ -49,7 +52,8 @@ Registro de diferencias entre la propuesta inicial (`docs/architecture-proposal.
 | Tests unitarios de order-processor (`./mvnw test`) | ✅ |
 | Tests de integración de order-processor (`./mvnw verify`) | ⬜ completar con el resultado |
 | Tests de products-api y clients-api, validación de contratos | ✅ |
-| `docker compose up -d --build` con los tres servicios `healthy` | ⬜ completar con el resultado |
+| Compilación de las tres imágenes Docker (incluye la compilación de los tests de order-processor) | ✅ |
+| `docker compose up -d --build` con los tres servicios `healthy` | ⬜ Kafka, MongoDB y las APIs `healthy`; order-processor pendiente de confirmar tras cambiar el puerto |
 | Prueba manual del README: aprobado, duplicado, inválido, `TECHNICAL_FAILURE` | ⬜ completar con el resultado |
 | Caída de MongoDB y de Kafka durante el procesamiento | ⬜ completar con el resultado |
 | Pipeline de CI en GitHub | ⬜ completar con el resultado |
