@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -euo pipefail
 
 TOPIC="${1:-orders.processed.v1}"
