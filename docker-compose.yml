@@ -66,6 +66,7 @@ services:
       retries: 20
       start_period: 10s
 
+  # Crea colecciones e índices de forma idempotente y termina.
   mongo-init:
     image: mongo:${MONGO_VERSION:-8.0}
     depends_on:
@@ -77,6 +78,24 @@ services:
       - ./infra/mongo/init-indexes.js:/scripts/init-indexes.js:ro
     entrypoint: ["mongosh", "mongodb://mongo:27017/?replicaSet=rs0", "--quiet", "/scripts/init-indexes.js"]
     restart: "no"
+
+  products-api:
+    build: ./products-api
+    ports:
+      - "${PRODUCTS_API_PORT:-8081}:8080"
+    environment:
+      PORT: "8080"
+      REQUEST_TIMEOUT: 5s
+      SHUTDOWN_TIMEOUT: 10s
+      FAULT_INJECTION_ENABLED: ${FAULT_INJECTION_ENABLED:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    healthcheck:
+      test: ["CMD", "/products-api", "-healthcheck"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    stop_grace_period: 15s
 
   # ---------------------------------------------------------------------------
   # Herramientas opcionales (perfil "tools"). No se levantan por defecto.
