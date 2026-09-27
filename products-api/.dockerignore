@@ -1,0 +1,6 @@
+# Solo el código fuente entra al contexto de build.
+.git
+*.md
+Dockerfile
+.dockerignore
+coverage.out
