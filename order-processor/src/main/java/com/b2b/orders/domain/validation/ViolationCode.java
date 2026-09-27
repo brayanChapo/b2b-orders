@@ -1,0 +1,12 @@
+package com.b2b.orders.domain.validation;
+
+public enum ViolationCode {
+    MISSING_FIELD,
+    INVALID_EVENT_VERSION,
+    EMPTY_ITEMS,
+    DUPLICATE_PRODUCT,
+    INVALID_QUANTITY,
+    NEGATIVE_UNIT_PRICE,
+    UNSUPPORTED_MARKET,
+    CURRENCY_MARKET_MISMATCH
+}

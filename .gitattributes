@@ -6,3 +6,7 @@
 *.yml   text eol=lf
 *.yaml  text eol=lf
 *.json  text eol=lf
+
+# Maven Wrapper: el script Unix con LF y el de Windows con CRLF (requerido por cmd.exe).
+mvnw    text eol=lf
+*.cmd   text eol=crlf
