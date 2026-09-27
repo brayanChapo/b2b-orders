@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Git Bash (Windows) convierte argumentos como /opt/... en rutas de Windows antes de pasarlos a Docker.
+export MSYS_NO_PATHCONV=1
+
 TOPIC="${1:-orders.processed.v1}"
 TIMEOUT_MS="${2:-10000}"
 

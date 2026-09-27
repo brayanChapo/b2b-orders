@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Git Bash (Windows) convierte argumentos como /opt/... en rutas de Windows antes de pasarlos a Docker.
+export MSYS_NO_PATHCONV=1
+
 if [[ $# -lt 1 ]]; then
   echo "Uso: $0 <archivo.json> [tópico] [repeticiones]" >&2
   exit 1

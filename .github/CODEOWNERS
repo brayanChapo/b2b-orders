@@ -1,0 +1,18 @@
+# Reemplazar los equipos de ejemplo por los reales de la organización.
+# Un cambio en un contrato requiere la aprobación de su dueño (docs/architecture-proposal.md §8.3).
+
+*                                           @b2b-orders/tech-lead
+
+/contracts/                                 @b2b-orders/tech-lead
+/contracts/events/orders.processed.v1*      @b2b-orders/order-processing
+/contracts/events/orders.processing.dlt*    @b2b-orders/order-processing
+/contracts/http/products-api.openapi.yaml   @b2b-orders/catalog
+/contracts/http/clients-api.openapi.yaml    @b2b-orders/clients
+/contracts/http/error.schema.json           @b2b-orders/tech-lead
+
+/order-processor/                           @b2b-orders/order-processing
+/order-processor/src/main/java/com/b2b/orders/infrastructure/mongo/   @b2b-orders/tech-lead
+/products-api/                              @b2b-orders/catalog
+/clients-api/                               @b2b-orders/clients
+/infra/                                     @b2b-orders/tech-lead
+/docs/adr/                                  @b2b-orders/tech-lead

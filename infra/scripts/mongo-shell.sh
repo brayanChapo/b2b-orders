@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Git Bash (Windows) convierte argumentos como /opt/... en rutas de Windows antes de pasarlos a Docker.
+export MSYS_NO_PATHCONV=1
+
 DB="${MONGO_DB:-orders}"
 cd "$(dirname "$0")/../.."
 

@@ -115,6 +115,29 @@ services:
       start_period: 10s
     stop_grace_period: 15s
 
+  order-processor:
+    build: ./order-processor
+    ports:
+      - "${ORDER_PROCESSOR_PORT:-8083}:8080"
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+      mongo-init:
+        condition: service_completed_successfully
+      products-api:
+        condition: service_healthy
+      clients-api:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+      MONGODB_URI: mongodb://mongo:27017/${MONGO_DB:-orders}?replicaSet=rs0
+      MONGODB_DATABASE: ${MONGO_DB:-orders}
+      PRODUCTS_API_URL: http://products-api:8080
+      CLIENTS_API_URL: http://clients-api:8080
+      KAFKA_LISTENER_CONCURRENCY: ${TOPIC_PARTITIONS:-3}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ${ORDER_PROCESSOR_LOG_FORMAT:-logstash}
+    stop_grace_period: 40s
+
   # ---------------------------------------------------------------------------
   # Herramientas opcionales (perfil "tools"). No se levantan por defecto.
   # ---------------------------------------------------------------------------
