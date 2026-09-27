@@ -1,0 +1,19 @@
+{
+  "name": "b2b-orders-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Validación de contratos de eventos y APIs HTTP",
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "^10.1.1",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "js-yaml": "^4.1.0"
+  }
+}

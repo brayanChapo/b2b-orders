@@ -1,0 +1,19 @@
+{
+  "eventId": "01J8ZS9T8V7W6X5Y4Z3A2B1C0D",
+  "eventVersion": 1,
+  "occurredAt": "2026-09-18T15:42:10Z",
+  "orderId": "ORD-MX-000148",
+  "market": "MX",
+  "currency": "MXN",
+  "clientId": "CLI-99821",
+  "channel": "C1",
+  "items": [
+    {
+      "productId": "PRD-001",
+      "quantity": 1,
+      "unitPrice": 35.5,
+      "note": "campo nuevo"
+    }
+  ],
+  "salesRepId": "REP-77"
+}

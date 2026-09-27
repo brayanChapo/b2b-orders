@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.b2b-orders.local/events/orders.processing.dlt.headers.schema.json",
+  "title": "Headers de orders.processing.dlt",
+  "description": "El VALUE del mensaje en la DLT es el mensaje original sin modificar (bytes idénticos) y la KEY es la original. Toda la metadata del fallo viaja en headers de Kafka. Este esquema valida los headers representados como un objeto clave → valor (texto UTF-8). Dueño: order-processor.",
+  "type": "object",
+  "required": [
+    "dlt-error-category", "dlt-error-summary", "dlt-attempts", "dlt-failed-at",
+    "dlt-component", "dlt-original-topic", "dlt-original-partition", "dlt-original-offset"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "dlt-order-id": {
+      "description": "orderId, si pudo extraerse del mensaje.",
+      "type": "string"
+    },
+    "dlt-event-id": {
+      "description": "eventId, si pudo extraerse del mensaje.",
+      "type": "string"
+    },
+    "dlt-error-category": {
+      "type": "string",
+      "enum": [
+        "VALIDATION_ERROR",
+        "TRANSIENT_DEPENDENCY_EXHAUSTED",
+        "DEFINITIVE_DEPENDENCY_ERROR",
+        "PERSISTENCE_ERROR",
+        "REPEATED_DELIVERY_FAILURE"
+      ]
+    },
+    "dlt-error-code": {
+      "description": "Código específico dentro de la categoría (p. ej. CURRENCY_MARKET_MISMATCH, PRODUCTS_API_503).",
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$"
+    },
+    "dlt-error-summary": {
+      "description": "Causa resumida y sanitizada. Sin stack traces, secretos ni datos personales.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "dlt-attempts": {
+      "description": "Cantidad de intentos realizados, como texto decimal.",
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "dlt-failed-at": {
+      "description": "Momento del envío a la DLT (ISO-8601, UTC).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "dlt-component": {
+      "description": "Componente y versión que reportó el fallo, p. ej. order-processor@0.1.0.",
+      "type": "string",
+      "minLength": 1
+    },
+    "dlt-original-topic": { "type": "string", "minLength": 1 },
+    "dlt-original-partition": { "type": "string", "pattern": "^[0-9]+$" },
+    "dlt-original-offset": { "type": "string", "pattern": "^[0-9]+$" },
+    "traceparent": {
+      "description": "Contexto de trazas W3C, si existe.",
+      "type": "string"
+    }
+  }
+}

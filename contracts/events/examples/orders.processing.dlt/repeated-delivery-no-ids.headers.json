@@ -1,0 +1,10 @@
+{
+  "dlt-error-category": "REPEATED_DELIVERY_FAILURE",
+  "dlt-error-summary": "record exceeded 3 delivery attempts without completing",
+  "dlt-attempts": "4",
+  "dlt-failed-at": "2026-09-18T15:50:00Z",
+  "dlt-component": "order-processor@0.1.0",
+  "dlt-original-topic": "orders.created.v1",
+  "dlt-original-partition": "0",
+  "dlt-original-offset": "9120"
+}

@@ -1,0 +1,13 @@
+{
+  "dlt-order-id": "ORD-MX-000147",
+  "dlt-event-id": "01J8ZP6M5E4RH0K7Y2N9A3TQWX",
+  "dlt-error-category": "TRANSIENT_DEPENDENCY_EXHAUSTED",
+  "dlt-error-code": "PRODUCTS_API_503",
+  "dlt-error-summary": "products-api returned 503 for PRD-008 after 3 attempts",
+  "dlt-attempts": "3",
+  "dlt-failed-at": "2026-09-18T15:42:14.201Z",
+  "dlt-component": "order-processor@0.1.0",
+  "dlt-original-topic": "orders.created.v1",
+  "dlt-original-partition": "2",
+  "dlt-original-offset": "18841"
+}

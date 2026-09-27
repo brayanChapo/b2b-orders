@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.b2b-orders.local/events/orders.created.v1.schema.json",
+  "title": "OrderCreated v1",
+  "description": "Pedido creado por un distribuidor. Tópico: orders.created.v1. Key del mensaje: orderId. Dueño: equipo de captura de pedidos. Este esquema describe la FORMA del evento; las reglas semánticas (mercados soportados, moneda por mercado, productId sin repetir) son políticas del consumidor y se documentan en contracts/README.md.",
+  "type": "object",
+  "required": ["eventId", "eventVersion", "orderId", "market", "currency", "clientId", "items"],
+  "additionalProperties": true,
+  "properties": {
+    "eventId": {
+      "description": "Identificador único del evento. Se recomienda ULID. Es la clave de idempotencia.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "eventVersion": {
+      "description": "Revisión del pedido, monótona creciente por orderId (supuesto S1). NO es la versión del esquema: esa la indica el sufijo del tópico.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "occurredAt": {
+      "description": "Momento en que el productor generó el evento (ISO-8601, UTC).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "orderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "market": {
+      "description": "Código de país ISO 3166-1 alfa-2. El contrato no restringe la lista: qué mercados se procesan es una política del consumidor.",
+      "type": "string",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "currency": {
+      "description": "Código de moneda ISO 4217.",
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "clientId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "channel": {
+      "description": "Canal de origen del pedido. Informativo; no afecta reglas de negocio en v1.",
+      "type": "string",
+      "maxLength": 32
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/item" }
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["productId", "quantity", "unitPrice"],
+      "additionalProperties": true,
+      "properties": {
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "quantity": {
+          "description": "Unidades. Entero mayor que cero.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "unitPrice": {
+          "description": "Precio unitario acordado, en la moneda del pedido. Los consumidores DEBEN leerlo como decimal exacto, nunca como punto flotante binario.",
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

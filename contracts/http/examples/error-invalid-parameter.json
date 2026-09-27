@@ -1,0 +1,9 @@
+{
+  "code": "INVALID_PARAMETER",
+  "message": "market must be one of MX, CO, PE",
+  "status": 400,
+  "timestamp": "2026-09-18T15:42:10Z",
+  "details": [
+    { "field": "market", "issue": "unsupported value 'AR'" }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.b2b-orders.local/events/orders.processed.v1.schema.json",
+  "title": "OrderProcessed v1",
+  "description": "Resultado definitivo de negocio de un pedido. Tópico: orders.processed.v1. Key del mensaje: orderId. Dueño: order-processor. Entrega al-menos-una-vez: los consumidores DEBEN deduplicar por eventId y conservar el resultado con mayor sourceEventVersion por orderId. TECHNICAL_FAILURE no se publica en este tópico.",
+  "type": "object",
+  "required": [
+    "eventId", "eventVersion", "occurredAt", "sourceEventId", "sourceEventVersion",
+    "orderId", "status", "market", "currency", "totals", "reason"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "eventId": {
+      "description": "Identificador único de este evento de salida (ULID). Se genera una sola vez; una republicación conserva el mismo valor.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "eventVersion": {
+      "description": "Revisión del pedido a la que corresponde este resultado. Misma semántica que en orders.created.v1; por eso coincide con sourceEventVersion.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "occurredAt": {
+      "description": "Momento en que se determinó el resultado (ISO-8601, UTC).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceEventId": {
+      "description": "eventId del orders.created.v1 que originó este resultado.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "sourceEventVersion": {
+      "description": "eventVersion del evento de origen. Se incluye explícitamente para que los consumidores ordenen resultados sin depender de convenciones.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "orderId": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "clientId": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "status": {
+      "description": "Nuevos valores se anunciarán con antelación; los consumidores deben ignorar estados que no reconozcan.",
+      "type": "string",
+      "enum": ["APPROVED", "REJECTED"]
+    },
+    "market": { "type": "string", "pattern": "^[A-Z]{2}$" },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "totals": {
+      "description": "Totales del pedido. null cuando status = REJECTED: un pedido rechazado puede no tener todos los datos necesarios para calcular impuestos.",
+      "oneOf": [
+        { "$ref": "#/$defs/totals" },
+        { "type": "null" }
+      ]
+    },
+    "reason": {
+      "description": "Código de la razón principal de rechazo. null cuando status = APPROVED. Códigos conocidos en v1: CLIENT_NOT_FOUND, CLIENT_NOT_ACTIVE, CLIENT_MARKET_MISMATCH, PRODUCT_NOT_FOUND, PRODUCT_NOT_ACTIVE. Pueden agregarse códigos nuevos.",
+      "oneOf": [
+        { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        { "type": "null" }
+      ]
+    },
+    "reasons": {
+      "description": "Detalle de todas las razones evaluadas, en orden determinista. Vacío cuando status = APPROVED.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/rejectionReason" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "APPROVED" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "totals": { "$ref": "#/$defs/totals" },
+          "reason": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "REJECTED" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "totals": { "type": "null" },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "money": {
+      "description": "Importe con exactamente dos decimales de escala (HALF_UP). Se publica como número JSON por compatibilidad con el contrato definido; los consumidores DEBEN leerlo como decimal exacto.",
+      "type": "number",
+      "minimum": 0
+    },
+    "totals": {
+      "type": "object",
+      "required": ["grossSubtotal", "discount", "netSubtotal", "tax", "grandTotal"],
+      "additionalProperties": true,
+      "properties": {
+        "grossSubtotal": { "$ref": "#/$defs/money" },
+        "discount": { "$ref": "#/$defs/money" },
+        "netSubtotal": { "$ref": "#/$defs/money" },
+        "tax": { "$ref": "#/$defs/money" },
+        "grandTotal": { "$ref": "#/$defs/money" }
+      }
+    },
+    "rejectionReason": {
+      "type": "object",
+      "required": ["code"],
+      "additionalProperties": true,
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "productId": {
+          "description": "Presente cuando la razón se refiere a un producto concreto.",
+          "type": "string"
+        },
+        "detail": {
+          "description": "Descripción legible. No debe contener datos sensibles.",
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    }
+  }
+}

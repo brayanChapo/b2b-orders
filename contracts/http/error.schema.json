@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.b2b-orders.local/http/error.schema.json",
+  "title": "Cuerpo de error HTTP",
+  "description": "Estándar compartido de plataforma para toda respuesta de error (4xx y 5xx) de products-api y clients-api. Los consumidores deciden por el código HTTP y por `code`, nunca por `message`.",
+  "type": "object",
+  "required": ["code", "message", "status", "timestamp"],
+  "additionalProperties": true,
+  "properties": {
+    "code": {
+      "description": "Código estable y legible por máquina, en MAYÚSCULAS_CON_GUIONES_BAJOS.",
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$"
+    },
+    "message": {
+      "description": "Mensaje para personas. Puede cambiar sin aviso; no debe parsearse. Sin datos sensibles ni detalles internos.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "status": {
+      "description": "Repite el código HTTP para facilitar logs y depuración.",
+      "type": "integer",
+      "minimum": 400,
+      "maximum": 599
+    },
+    "traceId": {
+      "description": "Identificador de correlación de la solicitud (derivado de traceparent o X-Request-Id).",
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "details": {
+      "description": "Detalle opcional por campo, típicamente para errores de validación (400).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "issue"],
+        "additionalProperties": true,
+        "properties": {
+          "field": { "type": "string" },
+          "issue": { "type": "string" }
+        }
+      }
+    }
+  }
+}

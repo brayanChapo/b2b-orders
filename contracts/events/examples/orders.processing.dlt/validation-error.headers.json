@@ -1,0 +1,13 @@
+{
+  "dlt-order-id": "ORD-MX-000147",
+  "dlt-event-id": "01J8ZP6M5E4RH0K7Y2N9A3TQWX",
+  "dlt-error-category": "VALIDATION_ERROR",
+  "dlt-error-code": "CURRENCY_MARKET_MISMATCH",
+  "dlt-error-summary": "currency PEN does not match market MX (expected MXN)",
+  "dlt-attempts": "1",
+  "dlt-failed-at": "2026-09-18T15:42:10.845Z",
+  "dlt-component": "order-processor@0.1.0",
+  "dlt-original-topic": "orders.created.v1",
+  "dlt-original-partition": "2",
+  "dlt-original-offset": "18841"
+}

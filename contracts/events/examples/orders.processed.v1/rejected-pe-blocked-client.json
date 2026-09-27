@@ -1,0 +1,20 @@
+{
+  "eventId": "01J8ZQ5X3Y4Z5A6B7C8D9E0F1G",
+  "eventVersion": 1,
+  "occurredAt": "2026-09-18T16:05:01Z",
+  "sourceEventId": "01J8ZQ5W2H8J3K9M4N6P7Q1R2S",
+  "sourceEventVersion": 1,
+  "orderId": "ORD-PE-000512",
+  "clientId": "CLI-30002",
+  "status": "REJECTED",
+  "market": "PE",
+  "currency": "PEN",
+  "totals": null,
+  "reason": "CLIENT_NOT_ACTIVE",
+  "reasons": [
+    {
+      "code": "CLIENT_NOT_ACTIVE",
+      "detail": "Client status is BLOCKED"
+    }
+  ]
+}

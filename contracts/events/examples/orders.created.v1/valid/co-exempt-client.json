@@ -1,0 +1,16 @@
+{
+  "eventId": "01J8ZQ3K7V2M9X4B6N8P0R5T1C",
+  "eventVersion": 1,
+  "occurredAt": "2026-09-18T16:00:00Z",
+  "orderId": "ORD-CO-000031",
+  "market": "CO",
+  "currency": "COP",
+  "clientId": "CLI-20002",
+  "items": [
+    {
+      "productId": "PRD-003",
+      "quantity": 5,
+      "unitPrice": 12500
+    }
+  ]
+}

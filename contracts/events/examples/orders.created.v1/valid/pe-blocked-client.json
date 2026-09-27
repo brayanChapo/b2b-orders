@@ -1,0 +1,16 @@
+{
+  "eventId": "01J8ZQ5W2H8J3K9M4N6P7Q1R2S",
+  "eventVersion": 1,
+  "occurredAt": "2026-09-18T16:05:00Z",
+  "orderId": "ORD-PE-000512",
+  "market": "PE",
+  "currency": "PEN",
+  "clientId": "CLI-30002",
+  "items": [
+    {
+      "productId": "PRD-001",
+      "quantity": 1,
+      "unitPrice": 3.9
+    }
+  ]
+}

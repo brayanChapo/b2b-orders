@@ -1,0 +1,177 @@
+openapi: 3.1.0
+info:
+  title: Clients API
+  version: 1.0.0
+  description: |
+    Datos de clientes (distribuidores). Dueño: equipo de clients-api.
+
+    Reglas para consumidores:
+    - Ignorar campos desconocidos en las respuestas.
+    - Tratar valores desconocidos de `status`, `segment` o `taxRegime` con un valor seguro
+      (para order-processor: cliente no elegible; segmento sin descuento; régimen no exento).
+    - Decidir por código HTTP y `code` del error, nunca por `message`.
+    - Reintentables: 429, 500, 502, 503 y timeout. Definitivos: 400, 404.
+servers:
+  - url: http://localhost:8082
+paths:
+  /clients/{clientId}:
+    get:
+      operationId: getClient
+      summary: Obtiene un cliente
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/Traceparent'
+        - $ref: '#/components/parameters/Fault'
+      responses:
+        '200':
+          description: Cliente encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+              example:
+                clientId: CLI-99821
+                name: Distribuidora Central
+                status: ACTIVE
+                segment: WHOLESALE
+                taxRegime: GENERAL
+                market: MX
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: El cliente no existe.
+          content:
+            application/json:
+              schema:
+                $ref: './error.schema.json'
+              example:
+                code: CLIENT_NOT_FOUND
+                message: Client CLI-00000 not found
+                status: 404
+                traceId: 4bf92f3577b34da6a3ce929d0e0e4736
+                timestamp: '2026-09-18T15:42:10Z'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '502':
+          $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/ServerError'
+  /health:
+    get:
+      operationId: health
+      summary: Healthcheck (liveness y readiness)
+      responses:
+        '200':
+          description: Servicio sano.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          description: Servicio apagándose o no listo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+components:
+  parameters:
+    ClientId:
+      name: clientId
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+        pattern: '^[A-Za-z0-9-]+$'
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      description: Contexto de trazas W3C. Si falta, el servicio genera un traceId.
+      schema:
+        type: string
+    Fault:
+      name: X-Fault
+      in: header
+      required: false
+      description: |
+        SOLO PARA PRUEBAS. Se ignora salvo que FAULT_INJECTION_ENABLED=true.
+        Fuerza una respuesta de error para simular fallos transitorios.
+      schema:
+        type: string
+        enum: ['429', '500', '502', '503', 'timeout']
+  responses:
+    BadRequest:
+      description: Parámetros inválidos.
+      content:
+        application/json:
+          schema:
+            $ref: './error.schema.json'
+          example:
+            code: INVALID_PARAMETER
+            message: clientId has an invalid format
+            status: 400
+            timestamp: '2026-09-18T15:42:10Z'
+            details:
+              - field: clientId
+                issue: must match ^[A-Za-z0-9-]+$
+    TooManyRequests:
+      description: Límite temporal de solicitudes. Reintentable.
+      headers:
+        Retry-After:
+          description: Segundos sugeridos antes de reintentar.
+          schema:
+            type: integer
+            minimum: 0
+      content:
+        application/json:
+          schema:
+            $ref: './error.schema.json'
+          example:
+            code: RATE_LIMITED
+            message: Too many requests
+            status: 429
+            timestamp: '2026-09-18T15:42:10Z'
+    ServerError:
+      description: Error transitorio del servidor o de una dependencia. Reintentable.
+      content:
+        application/json:
+          schema:
+            $ref: './error.schema.json'
+          example:
+            code: SERVICE_UNAVAILABLE
+            message: Service temporarily unavailable
+            status: 503
+            timestamp: '2026-09-18T15:42:10Z'
+  schemas:
+    Client:
+      type: object
+      required: [clientId, name, status, segment, taxRegime, market]
+      additionalProperties: true
+      properties:
+        clientId:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, BLOCKED]
+        segment:
+          type: string
+          enum: [WHOLESALE, RETAIL]
+        taxRegime:
+          type: string
+          enum: [GENERAL, SIMPLIFIED, EXEMPT]
+        market:
+          type: string
+          pattern: '^[A-Z]{2}$'
+    Health:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN]
